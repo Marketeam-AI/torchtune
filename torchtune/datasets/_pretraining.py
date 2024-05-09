@@ -72,6 +72,7 @@ def pretraining_dataset(
     source: str,
     column: str,
     max_seq_len: Optional[int] = None,
+    dataset_load_from_disk: bool = False,
     **load_dataset_kwargs: Dict[str, Any],
 ) -> PretrainingDataset:
     """
@@ -97,5 +98,6 @@ def pretraining_dataset(
         source=source,
         column=column,
         max_seq_len=max_seq_len,
+        dataset_load_from_disk=dataset_load_from_disk,
         **load_dataset_kwargs,
     )
