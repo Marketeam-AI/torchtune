@@ -6,7 +6,7 @@
 
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 from torch.utils.data import Dataset
 from torchtune.data import truncate
 from torchtune.modules.tokenizers import Tokenizer
@@ -15,7 +15,7 @@ from torchtune.modules.tokenizers import Tokenizer
 class PretrainingDataset(Dataset):
     """
     Freeform dataset for any unstructured text corpus. Quickly load any dataset
-    from Hugging Face or local disk and tokenize it correctly for your model.
+    from Hugging Face or local disk and tokenize it for your model.
 
     Args:
         tokenizer (Tokenizer): Tokenizer used to encode data. Tokenize must implement an `encode` and `decode` method.
@@ -34,10 +34,15 @@ class PretrainingDataset(Dataset):
         source: str,
         column: str,
         max_seq_len: Optional[int] = None,
+        dataset_load_from_disk: bool = False,
         **load_dataset_kwargs: Dict[str, Any],
     ) -> None:
         self._tokenizer = tokenizer
-        self._data = load_dataset(source, **load_dataset_kwargs)
+        if dataset_load_from_disk:
+          self._data = load_from_disk(source)
+        else:
+          self._data = load_dataset(source, **load_dataset_kwargs)
+
         self.max_seq_len = max_seq_len
         self._column = column
 
@@ -58,8 +63,6 @@ class PretrainingDataset(Dataset):
 
         # No need to offset labels by 1 - happens in the recipe
         labels = tokens.copy()
-
-        assert len(tokens) == len(labels)
 
         return tokens, labels
 
