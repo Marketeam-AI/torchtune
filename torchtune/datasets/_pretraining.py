@@ -35,11 +35,14 @@ class PretrainingDataset(Dataset):
         column: str,
         max_seq_len: Optional[int] = None,
         dataset_load_from_disk: bool = False,
+        split: str = "train",
         **load_dataset_kwargs: Dict[str, Any],
     ) -> None:
         self._tokenizer = tokenizer
         if dataset_load_from_disk:
           self._data = load_from_disk(source)
+          if split:
+              self._data = self._data[split]
         else:
           self._data = load_dataset(source, **load_dataset_kwargs)
 
@@ -73,6 +76,7 @@ def pretraining_dataset(
     column: str,
     max_seq_len: Optional[int] = None,
     dataset_load_from_disk: bool = False,
+    split: str = "train",
     **load_dataset_kwargs: Dict[str, Any],
 ) -> PretrainingDataset:
     """
@@ -99,5 +103,6 @@ def pretraining_dataset(
         column=column,
         max_seq_len=max_seq_len,
         dataset_load_from_disk=dataset_load_from_disk,
+        split=split,
         **load_dataset_kwargs,
     )
